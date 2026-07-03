@@ -12,3 +12,25 @@ dist/
 .sidecar-start.sh
 .sidecar-base
 .td-root
+
+# Secrets / env files
+*.env
+.env
+.env.*
+
+# Claude Code local settings (per-machine, not shared)
+.claude/settings.local.json
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Backup / temp files
+*.bak
+*~
