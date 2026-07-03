@@ -1,0 +1,52 @@
+{ pkgs, ... }:
+{
+  home.packages = with pkgs; [
+    alejandra
+    ansible
+    azure-cli
+    bun
+    cilium-cli
+    devenv
+    docker-compose
+    doppler
+    gcc
+    gh
+    go
+    go-migrate
+    gradle_9
+    grpc
+    jdk25
+    just
+    k9s
+    kubectl
+    kubectx
+    kubernetes-helm
+    maven
+    nix-output-monitor
+    nix-prefetch-github
+    nodejs
+    nvd
+    pnpm
+    postgresql
+    protobuf
+    protoc-gen-go
+    protoc-gen-go-grpc
+    python3
+    rancher
+    ripgrep
+    rustup
+    shellcheck
+    sqlc
+    talosctl
+    terraform
+    terraform-docs
+    terraform-ls
+    tflint
+    tfsec
+    typescript
+    uv
+    worktrunk
+    yq
+    zig
+  ];
+}

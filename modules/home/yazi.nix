@@ -1,0 +1,29 @@
+# yazi - terminal file manager with plugins
+{ inputs, ... }:
+{
+  programs.yazi = {
+    enable = true;
+    enableZshIntegration = true;
+    shellWrapperName = "yy"; # Keep legacy wrapper name (y is aliased to yazi in zsh)
+
+    settings = {
+      mgr = {
+        linemode = "size";
+        show_hidden = true;
+        show_symlink = true;
+        sort_by = "natural";
+        sort_dir_first = true;
+        sort_reverse = false;
+        sort_sensitive = false;
+      };
+    };
+
+    plugins = {
+      full-border = "${inputs.yazi-plugins}/full-border.yazi";
+    };
+  };
+
+  xdg.configFile."yazi/init.lua".text = ''
+    require("full-border"):setup()
+  '';
+}
