@@ -219,16 +219,16 @@
     "sidecar": {
       "flake": false,
       "locked": {
-        "lastModified": 1773101481,
-        "narHash": "sha256-dVRSd8svfuv1+fYbHpFtXYHXvbAqomXKu9qi6Y5Y5S4=",
+        "lastModified": 1781724760,
+        "narHash": "sha256-zhSWGKmTgDKSwQLhax2XoXJXnyJ+cdhK4M0bcHAW8lE=",
         "owner": "marcus",
         "repo": "sidecar",
-        "rev": "3442c9c45d077b2420c4988f3894d2dd0037e3cc",
+        "rev": "371bbd181d989f836ee8d3a71cd7ac86d630f190",
         "type": "github"
       },
       "original": {
         "owner": "marcus",
-        "ref": "v0.78.0",
+        "ref": "v0.86.0",
         "repo": "sidecar",
         "type": "github"
       }
@@ -266,16 +266,16 @@
     "td": {
       "flake": false,
       "locked": {
-        "lastModified": 1773101081,
-        "narHash": "sha256-fUvEgbwN3zBb4r64GwLlUNVydVacP0wiOIBb1BuPWzQ=",
+        "lastModified": 1782014665,
+        "narHash": "sha256-tsBS3X2S3gVmeSlQzYYlBS0S18Ee/Ze9yj67bJghSRw=",
         "owner": "marcus",
         "repo": "td",
-        "rev": "00a292511bd0425f0f107b039d1ab8c52c8377f8",
+        "rev": "0f39dfebff89079b9fdb5d3bfd46944008ef07f2",
         "type": "github"
       },
       "original": {
         "owner": "marcus",
-        "ref": "v0.42.0",
+        "ref": "v0.51.0",
         "repo": "td",
         "type": "github"
       }

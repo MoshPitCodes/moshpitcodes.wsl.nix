@@ -24,12 +24,12 @@
     };
 
     sidecar = {
-      url = "github:marcus/sidecar/v0.78.0";
+      url = "github:marcus/sidecar/v0.86.0";
       flake = false;
     };
 
     td = {
-      url = "github:marcus/td/v0.42.0";
+      url = "github:marcus/td/v0.51.0";
       flake = false;
     };
 

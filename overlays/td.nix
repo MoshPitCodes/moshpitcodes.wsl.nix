@@ -2,11 +2,11 @@
 final: prev: {
   td = prev.buildGoModule rec {
     pname = "td";
-    version = "0.42.0";
+    version = "0.51.0";
 
     src = inputs.td;
     proxyVendor = true;
-    vendorHash = "sha256-6OMT5nGoEFRkaQjh1SLBn8rfHZfcOlD0C+foZu6VhLY=";
+    vendorHash = "sha256-F8G/peY9N/eQzX9s7mUsMj37TyzAjrehDGaho5gENYc=";
 
     subPackages = [ "." ];
 
