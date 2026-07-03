@@ -2,10 +2,10 @@
 final: prev: {
   sidecar = prev.buildGoModule rec {
     pname = "sidecar";
-    version = "0.78.0";
+    version = "0.86.0";
 
     src = inputs.sidecar;
-    vendorHash = "sha256-WIhE4CNbxmXaCczLOpFmAkxFcM37iE2tFuUmRnKRN54=";
+    vendorHash = "sha256-vMDUw6zA6OpH866VdtCuFu2cbHt5NnA6k4WtQjZTpxs=";
 
     subPackages = [ "cmd/sidecar" ];
 
