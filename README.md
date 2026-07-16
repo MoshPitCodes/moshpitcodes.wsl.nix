@@ -92,42 +92,22 @@ NixOS configuration for WSL2 on Windows 11. This follows the same broad shape as
 
 # Architecture
 
-```
-                                 flake.nix
-                                    |
-                     +--------------+--------------+
-                     |                             |
-                  inputs                       outputs
-                     |                             |
-        +------------+----------+      +-----------+-----------+
-        |   nixpkgs (unstable)  |      |  nixosConfigurations  |
-        |   home-manager        |      |                       |
-        |   nixos-wsl           |      |         wsl           |
-        |   nvf (neovim)        |      |                       |
-        |   ...                 |      +-----------+-----------+
-        +------------+----------+                  |
-                                       +-----------+-----------+
-                                       |  specialArgs:          |
-                                       |    customsecrets       |
-                                       |    inputs, host        |
-                                       +-----------+-----------+
-                                                  |
-                          +-----------------------+-------------------+
-                          |                                           |
-                    modules/core/                              modules/home/
-                          |                                           |
-            +-------------+-------------+           +------------------+----------------+
-            | nix         wsl           |           | git       zsh        tmux          |
-            | user        system        |           | gpg       ssh        fzf           |
-            | docker      samba         |           | nvim      bat        btop          |
-            | nas-mount   packages      |           | lazygit   yazi       backup-repos   |
-            +---------------------------+           | theme     dev        packages       |
-                                                    | language-servers                    |
-                                                    | coding-agents/                      |
-                                                    |   claude-code  codex  opencode      |
-                                                    |   kiro-code    kilo-code  pi-mono    |
-                                                    |   agent-browser                     |
-                                                    +-------------------------------------+
+```mermaid
+flowchart TD
+    flake["flake.nix"]
+    inputs["<b>inputs</b><br/>nixpkgs (unstable) · home-manager<br/>nixos-wsl · nvf · yazi-plugins<br/>sidecar · td · worktrunk"]
+    wsl["<b>outputs</b><br/>nixosConfigurations.wsl"]
+    args["<b>specialArgs</b><br/>customsecrets · inputs · host · username"]
+    core["<b>modules/core</b><br/>nix · wsl · system · user<br/>docker · samba · nas-mount · packages"]
+    home["<b>modules/home</b><br/>git · zsh · tmux · gpg · ssh · fzf<br/>nvim · bat · btop · lazygit · yazi<br/>theme · dev · packages · language-servers<br/>backup-repos"]
+    agents["<b>coding-agents/</b><br/>claude-code · codex · opencode<br/>kiro-code · kilo-code · pi-mono<br/>agent-browser"]
+
+    flake --> inputs
+    flake --> wsl
+    wsl --> args
+    args --> core
+    args --> home
+    home --> agents
 ```
 
 Cross-cutting module args (set once, consumed everywhere):
@@ -139,23 +119,21 @@ Cross-cutting module args (set once, consumed everywhere):
 - API keys are injected once in `modules/home/coding-agents/default.nix`, not
   per agent.
 
-```
-                            Secrets Flow
+```mermaid
+flowchart TD
+    secrets["secrets.nix<br/>(git-ignored)"]
+    loader["flake.nix<br/>import + validate<br/>(hard fail if missing)"]
+    cs["customsecrets<br/>(specialArgs)"]
+    core["<b>modules/core</b><br/>samba credentials<br/>NAS host/share"]
+    home["<b>modules/home</b><br/>git identity · API keys<br/>SSH/GPG/gh restore from NAS<br/>backup destination"]
+    doppler["Doppler CLI<br/>(*-doppler / *-setup aliases)"]
+    env["agent environment<br/>at runtime"]
 
-    secrets.nix (git-ignored)  ──>  flake.nix (import + validate)
-                                         |
-                                    customsecrets
-                                    (specialArgs)
-                                         |
-                    +--------------------+--------------------+
-                    |                    |                    |
-              modules/core         modules/home         Runtime
-                    |                    |                    |
-              - samba credentials  - git identity       Doppler CLI
-              - NAS host/share     - API keys             (shell
-                                   - SSH keys from NAS      aliases)
-                                   - GPG keys from NAS
-                                   - backup destination
+    secrets --> loader
+    loader --> cs
+    cs --> core
+    cs --> home
+    doppler -. "runtime API keys<br/>(alternative to secrets.nix)" .-> env
 ```
 
 <br/>
