@@ -1,4 +1,4 @@
-# bat - cat replacement with syntax highlighting (Everforest theme)
+# bat - cat replacement with syntax highlighting
 { pkgs, ... }:
 {
   programs.bat = {

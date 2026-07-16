@@ -4,7 +4,14 @@
   ...
 }:
 let
-  openaiApiKey = customsecrets.apiKeys.openai or "";
+  apiKeys = customsecrets.apiKeys or { };
+  # Only inject non-empty keys; empty values keep the variable unset so agents
+  # can pick up keys from the environment at runtime (e.g. via Doppler).
+  keyEnv = lib.filterAttrs (_: v: v != "") {
+    ANTHROPIC_API_KEY = apiKeys.anthropic or "";
+    OPENAI_API_KEY = apiKeys.openai or "";
+    OPENROUTER_API_KEY = apiKeys.openrouter or "";
+  };
 in
 {
   imports = [
@@ -17,8 +24,7 @@ in
     ./pi-mono.nix
   ];
 
-  # OPENAI_API_KEY is shared by codex and pi (both consume customsecrets.apiKeys.openai).
-  home.sessionVariables = lib.optionalAttrs (openaiApiKey != "") {
-    OPENAI_API_KEY = openaiApiKey;
-  };
+  # API keys are shared across the agent modules (claude-code, codex, kiro,
+  # opencode, pi), so they are injected once here rather than per module.
+  home.sessionVariables = keyEnv;
 }

@@ -1,13 +1,12 @@
 # CIFS/SMB NAS mount for UGREEN NAS
-# Ported from moshpitcodes.nix. The `noauto` + `x-systemd.automount` +
-# `_netdev` + `nofail` options make this safe under WSL: it mounts lazily on
-# first access and never blocks boot when the network/NAS is unavailable.
-{ customsecrets, ... }:
+# The `noauto` + `x-systemd.automount` + `_netdev` + `nofail` options make
+# this safe under WSL: it mounts lazily on first access and never blocks boot
+# when the network/NAS is unavailable.
+# Inert unless customsecrets defines a `nas` block (host + share).
+{ lib, customsecrets, ... }:
 {
-  fileSystems."/mnt/ugreen-nas" = {
-    device = "//${customsecrets.nas.host or "192.168.178.144"}/${
-      customsecrets.nas.share or "personal_folder"
-    }";
+  fileSystems."/mnt/ugreen-nas" = lib.mkIf (customsecrets ? nas) {
+    device = "//${customsecrets.nas.host}/${customsecrets.nas.share}";
     fsType = "cifs";
     options = [
       "credentials=/root/.secrets/samba-credentials"

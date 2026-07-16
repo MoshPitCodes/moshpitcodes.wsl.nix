@@ -31,13 +31,5 @@ updates:
 # Note: Nix flake.lock updates
 # ------------------------------
 # Dependabot does not natively support Nix flake inputs/flake.lock updates.
-# This repository uses a separate workflow (flake.lock update workflow) to
-# handle Nix dependency updates automatically. See:
-# - Recent commits show automated flake.lock updates are already in place
-# - Flake inputs are managed through the flake.nix file and updated with:
-#   `nix flake update` command
-#
-# For manual flake updates:
-#   nix flake update              # Update all inputs
-#   nix flake update <input>      # Update specific input
-#   nix flake lock --update-input <input>  # Alternative syntax
+# Those are handled by .github/workflows/update-flake.yml (weekly PR).
+# Manual updates: `nix flake update` or `nix flake update <input>`.

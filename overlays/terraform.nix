@@ -1,4 +1,7 @@
-final: prev:
+# Pins a Terraform release ahead of nixpkgs via the official binary download.
+# Bumping requires updating `version` and both per-platform hashes below.
+# Delete this overlay once the nixpkgs terraform package catches up.
+_final: prev:
 let
   version = "1.14.7";
   platformMap = {

@@ -1,15 +1,13 @@
 # Kiro IDE/CLI configuration
 # Uses the official native installer (https://cli.kiro.dev/install) instead of
 # nixpkgs, so Kiro can auto-update itself in the background.
+# ANTHROPIC_API_KEY is injected by coding-agents/default.nix; the install
+# target ~/.local/bin is on PATH via home.sessionPath (modules/home/default.nix).
 {
   pkgs,
   lib,
-  customsecrets,
   ...
 }:
-let
-  anthropicApiKey = customsecrets.apiKeys.anthropic or "";
-in
 {
   # Install Kiro CLI via native installer if not already present.
   # Current upstream installer places binaries in ~/.local/bin.
@@ -44,19 +42,6 @@ in
       $DRY_RUN_CMD ln -sf "$HOME/.local/bin/kiro-cli" "$HOME/.local/bin/kiro"
     fi
   '';
-
-  # Ensure local CLI install directory is on PATH
-  home.sessionPath = [ "$HOME/.local/bin" ];
-
-  # Create Kiro config directory
-  home.file.".config/kiro/.gitkeep" = {
-    text = "";
-  };
-
-  # API key from secrets
-  home.sessionVariables = lib.optionalAttrs (anthropicApiKey != "") {
-    ANTHROPIC_API_KEY = anthropicApiKey;
-  };
 
   # Shell aliases
   programs.zsh.shellAliases = {

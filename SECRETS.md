@@ -64,13 +64,11 @@ This WSL flake uses **file-based secrets** via a local `secrets.nix` file (the `
 
 | Key | Consumed by | Behaviour when empty/absent |
 |-----|-------------|------------------------------|
-| `username` | `flake.nix`, core/home user wiring | Falls back to `"nixos"` via the `builtins.trace` fallback |
+| `username` | `flake.nix`, core/home user wiring | Required — evaluation fails without it |
 | `git.userName` / `git.userEmail` | `modules/home/git.nix` | Falls back to `MoshPitCodes` / `moshpitcodes@example.com` |
 | `git.signingKey` | `modules/home/git.nix` (`signing` block) | `signByDefault` disabled via `lib.mkIf (signingKey != "")` |
-| `apiKeys.anthropic` | `claude-code.nix`, `kiro-code.nix`, `opencode.nix` | `ANTHROPIC_API_KEY` not injected; load at runtime instead |
-| `apiKeys.openai` | `coding-agents/default.nix`, `pi-mono.nix` | `OPENAI_API_KEY` not injected |
-| `apiKeys.openrouter` | `opencode.nix` | `OPENROUTER_API_KEY` not injected |
-| `nas.host` / `nas.share` | `modules/core/nas-mount.nix` | Falls back to `192.168.178.144` / `personal_folder`; the lazy CIFS mount evaluates but won't connect to a real share |
+| `apiKeys.*` | `modules/home/coding-agents/default.nix` | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `OPENROUTER_API_KEY` not injected; load at runtime instead |
+| `nas.host` / `nas.share` | `modules/core/nas-mount.nix` | Mount not declared at all (`lib.mkIf (customsecrets ? nas)`) |
 | `samba.*` | `modules/core/samba.nix` | Credential file `/root/.secrets/samba-credentials` is not written (`lib.mkIf (customsecrets ? samba)`); `cifs-utils` + mountpoint still installed |
 | `gpgDir` | `modules/home/gpg.nix` | Activation script skipped entirely (`lib.mkIf (customsecrets ? gpgDir)`) |
 | `backup.nasBackupPath` | `modules/home/backup-repos.nix` | Service + timer + aliases all disabled (`lib.mkIf hasBackupPath`). When set, the destructive `rsync --delete` also requires a one-time safety marker: `touch <nasBackupPath>/.moshpit-backup-target` on the NAS, otherwise backups skip until the marker exists. |
@@ -90,9 +88,9 @@ kiro-doppler        # doppler run -- kiro
 pi-doppler          # doppler run -- pi
 ```
 
-## Fallback behaviour
+## Missing secrets.nix
 
-If `secrets.nix` is missing entirely, `flake.nix` evaluates a built-in
-fallback (with empty `apiKeys` and `backup.nasBackupPath`) so the flake still
-builds. The modules above stay inert and the system comes up headless with a
-generic `nixos` user — useful for first boot and CI.
+If `secrets.nix` is missing entirely, evaluation **fails** with an error
+explaining how to create it (there is deliberately no silent fallback — it
+used to quietly build a generic `nixos` user). CI satisfies this by copying
+`secrets.nix.example` to `secrets.nix` and evaluating with `--impure`.

@@ -54,5 +54,7 @@ jobs:
     - name: Build wsl system configuration
       run: |
         echo "🔨 Building wsl system configuration..."
-        nix build .#nixosConfigurations.wsl.config.system.build.toplevel --show-trace
+        # --impure: secrets.nix is untracked, so it is resolved via $PWD at
+        # evaluation time (see flake.nix).
+        nix build .#nixosConfigurations.wsl.config.system.build.toplevel --impure --show-trace
         echo "✅ wsl system configuration builds successfully"

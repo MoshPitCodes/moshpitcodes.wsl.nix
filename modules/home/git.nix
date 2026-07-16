@@ -6,15 +6,7 @@
 }:
 let
   gitSecrets = customsecrets.git or { };
-  signingKey =
-    if gitSecrets ? signingKey then
-      gitSecrets.signingKey
-    else if gitSecrets ? user && gitSecrets.user ? signingkey then
-      gitSecrets.user.signingkey
-    else if gitSecrets ? signingkey then
-      gitSecrets.signingkey
-    else
-      "";
+  signingKey = gitSecrets.signingKey or "";
   ghConfigDir = customsecrets.ghConfigDir or "";
 in
 {

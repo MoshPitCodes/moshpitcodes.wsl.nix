@@ -105,8 +105,9 @@ the credential file is not written — safe but inert.
   `touch <nasBackupPath>/.moshpit-backup-target` once on the NAS, otherwise the
   backup aborts (non-destructively) until the marker exists.
 
-With the fallback `customsecrets` (no `secrets.nix`) the NAS mount and both
-modules above stay completely disabled.
+Without a `nas` block in `secrets.nix` the NAS mount is not declared, and
+without `gpgDir` / `backup.nasBackupPath` both modules above stay disabled.
+A missing `secrets.nix` fails evaluation entirely (see SECRETS.md).
 
 ## Overlays
 

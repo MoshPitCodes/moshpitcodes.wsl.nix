@@ -1,4 +1,4 @@
-final: prev: {
+_final: prev: {
   switch-to-configuration-ng = prev.switch-to-configuration-ng.overrideAttrs (old: {
     postPatch = (old.postPatch or "") + ''
       substituteInPlace src/main.rs \

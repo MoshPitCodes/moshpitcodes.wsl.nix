@@ -2,7 +2,6 @@
 {
   pkgs,
   lib,
-  config,
   customsecrets,
   host,
   ...
@@ -40,7 +39,6 @@ in
         # Check parent directory (the configured backup path)
         if [ ! -d "${backupPath}" ] && [ ! -L "${backupPath}" ]; then
           log "WARNING: Destination ${backupPath} not available (NAS not mounted?). Skipping."
-          ${pkgs.libnotify}/bin/notify-send -u normal "Backup Skipped" "NAS not available at ${backupPath}" 2>/dev/null || true
           exit 0
         fi
 
@@ -49,7 +47,6 @@ in
         # it once with: touch <nasBackupPath>/.moshpit-backup-target
         if [ ! -f "${backupPath}/.moshpit-backup-target" ]; then
           log "WARNING: safety marker ${backupPath}/.moshpit-backup-target missing. Refusing destructive sync. Create the marker to enable backups."
-          ${pkgs.libnotify}/bin/notify-send -u normal "Backup Skipped" "Safety marker missing at ${backupPath}" 2>/dev/null || true
           exit 0
         fi
 
@@ -66,12 +63,10 @@ in
           --exclude='.direnv/' \
           --exclude='result' \
           --exclude='.git/objects/' \
-          --exclude='*.lock' \
           --temp-dir=/tmp \
           "$SOURCE" "$DEST/" 2>&1 | tee -a "$LOG"
 
         log "Backup completed successfully"
-        ${pkgs.libnotify}/bin/notify-send -u low "Backup Complete" "Code repos backed up to NAS" 2>/dev/null || true
       '';
 
       Restart = "on-failure";
