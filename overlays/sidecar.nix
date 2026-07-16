@@ -1,7 +1,9 @@
 { inputs }:
-final: prev: {
+_final: prev: {
   sidecar = prev.buildGoModule rec {
     pname = "sidecar";
+    # Keep in sync with the `sidecar` input tag in flake.nix; a bump also
+    # needs a new vendorHash.
     version = "0.86.0";
 
     src = inputs.sidecar;

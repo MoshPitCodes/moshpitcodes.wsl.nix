@@ -1,55 +1,47 @@
-{
-  pkgs,
-  lib,
-  customsecrets,
-  ...
-}:
+# ANTHROPIC_API_KEY is injected by coding-agents/default.nix.
+{ pkgs, ... }:
 let
-  anthropicApiKey = customsecrets.apiKeys.anthropic or "";
-
   claude = pkgs.writeShellScriptBin "claude" ''
     exec ${pkgs.nodejs}/bin/npx -y @anthropic-ai/claude-code@latest "$@"
   '';
 in
 {
-  home.packages = [ claude ];
+  home = {
+    packages = [ claude ];
 
-  # No "model" key here: the file is a read-only nix-store symlink, so pinning
-  # a model would permanently shadow the default chosen interactively via
-  # /model. Deny rules must use the Tool(pattern) form to match anything.
-  home.file.".claude/settings.json" = {
-    force = true;
-    text = builtins.toJSON {
-      permissions = {
-        allow = [
-          "Read"
-          "Write"
-          "Edit"
-          "Bash"
-          "WebFetch"
-          "WebSearch"
-        ];
-        deny = [
-          "Read(**/.env)"
-          "Read(**/.env.*)"
-          "Read(**/secrets.nix)"
-          "Read(**/credentials.json)"
-          "Edit(**/.env)"
-          "Edit(**/secrets.nix)"
-          "Edit(**/credentials.json)"
-        ];
+    # No "model" key here: the file is a read-only nix-store symlink, so pinning
+    # a model would permanently shadow the default chosen interactively via
+    # /model. Deny rules must use the Tool(pattern) form to match anything.
+    file.".claude/settings.json" = {
+      force = true;
+      text = builtins.toJSON {
+        permissions = {
+          allow = [
+            "Read"
+            "Write"
+            "Edit"
+            "Bash"
+            "WebFetch"
+            "WebSearch"
+          ];
+          deny = [
+            "Read(**/.env)"
+            "Read(**/.env.*)"
+            "Read(**/secrets.nix)"
+            "Read(**/credentials.json)"
+            "Edit(**/.env)"
+            "Edit(**/secrets.nix)"
+            "Edit(**/credentials.json)"
+          ];
+        };
       };
     };
-  };
 
-  home.sessionVariables =
-    lib.optionalAttrs (anthropicApiKey != "") {
-      ANTHROPIC_API_KEY = anthropicApiKey;
-    }
-    // {
+    sessionVariables = {
       CLAUDE_CODE_DISABLE_ERROR_REPORTING = "1";
       CLAUDE_CODE_DISABLE_TELEMETRY = "1";
     };
+  };
 
   programs.zsh.shellAliases = {
     claude-setup = ''

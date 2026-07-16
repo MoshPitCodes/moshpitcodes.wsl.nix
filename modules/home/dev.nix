@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    alejandra
     ansible
     azure-cli
     bun
@@ -14,7 +13,6 @@
     go
     go-migrate
     gradle_9
-    grpc
     jdk25
     just
     k9s
@@ -33,9 +31,7 @@
     protoc-gen-go-grpc
     python3
     rancher
-    ripgrep
     rustup
-    shellcheck
     sqlc
     talosctl
     terraform
@@ -46,7 +42,7 @@
     typescript
     uv
     worktrunk
-    yq
+    zellij
     zig
   ];
 }

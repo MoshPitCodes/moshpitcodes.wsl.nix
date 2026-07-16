@@ -1,5 +1,5 @@
-# Btop system monitor configuration (Everforest theme)
-{ pkgs, ... }:
+# Btop system monitor configuration (theme colors from modules/home/theme.nix)
+{ palette, ... }:
 {
   programs.btop = {
     enable = true;
@@ -12,93 +12,86 @@
     };
   };
 
-  # Everforest btop theme
   xdg.configFile."btop/themes/everforest.theme".text = ''
     # Main background
-    theme[main_bg]="#2d353b"
+    theme[main_bg]="${palette.bg}"
 
     # Main text color
-    theme[main_fg]="#d3c6aa"
+    theme[main_fg]="${palette.fg}"
 
     # Title color for boxes
-    theme[title]="#d3c6aa"
+    theme[title]="${palette.fg}"
 
     # Highlight color for keyboard shortcuts
-    theme[hi_fg]="#e67e80"
+    theme[hi_fg]="${palette.red}"
 
     # Background color of selected items
-    theme[selected_bg]="#3d484d"
+    theme[selected_bg]="${palette.bgSelection}"
 
     # Foreground color of selected items
-    theme[selected_fg]="#dbbc7f"
+    theme[selected_fg]="${palette.yellow}"
 
     # Color of inactive/disabled text
-    theme[inactive_fg]="#2d353b"
+    theme[inactive_fg]="${palette.bg}"
 
     # Color of text appearing on top of graphs
-    theme[graph_text]="#d3c6aa"
+    theme[graph_text]="${palette.fg}"
 
     # Misc colors for processes box
-    theme[proc_misc]="#a7c080"
+    theme[proc_misc]="${palette.green}"
 
-    # Cpu box outline color
-    theme[cpu_box]="#3d484d"
-
-    # Memory/disks box outline color
-    theme[mem_box]="#3d484d"
-
-    # Net up/down box outline color
-    theme[net_box]="#3d484d"
-
-    # Processes box outline color
-    theme[proc_box]="#3d484d"
+    # Box outline colors
+    theme[cpu_box]="${palette.bgSelection}"
+    theme[mem_box]="${palette.bgSelection}"
+    theme[net_box]="${palette.bgSelection}"
+    theme[proc_box]="${palette.bgSelection}"
 
     # Box divider line and small boxes line color
-    theme[div_line]="#3d484d"
+    theme[div_line]="${palette.bgSelection}"
 
     # Temperature graph colors
-    theme[temp_start]="#a7c080"
-    theme[temp_mid]="#dbbc7f"
-    theme[temp_end]="#f85552"
+    theme[temp_start]="${palette.green}"
+    theme[temp_mid]="${palette.yellow}"
+    theme[temp_end]="${palette.brightRed}"
 
     # CPU graph colors
-    theme[cpu_start]="#a7c080"
-    theme[cpu_mid]="#dbbc7f"
-    theme[cpu_end]="#f85552"
+    theme[cpu_start]="${palette.green}"
+    theme[cpu_mid]="${palette.yellow}"
+    theme[cpu_end]="${palette.brightRed}"
 
     # Mem/Disk free meter
-    theme[free_start]="#f85552"
-    theme[free_mid]="#dbbc7f"
-    theme[free_end]="#a7c080"
+    theme[free_start]="${palette.brightRed}"
+    theme[free_mid]="${palette.yellow}"
+    theme[free_end]="${palette.green}"
 
     # Mem/Disk cached meter
-    theme[cached_start]="#7fbbb3"
-    theme[cached_mid]="#83c092"
-    theme[cached_end]="#a7c080"
+    theme[cached_start]="${palette.blue}"
+    theme[cached_mid]="${palette.aqua}"
+    theme[cached_end]="${palette.green}"
 
     # Mem/Disk available meter
-    theme[available_start]="#f85552"
-    theme[available_mid]="#dbbc7f"
-    theme[available_end]="#a7c080"
+    theme[available_start]="${palette.brightRed}"
+    theme[available_mid]="${palette.yellow}"
+    theme[available_end]="${palette.green}"
 
     # Mem/Disk used meter
-    theme[used_start]="#a7c080"
-    theme[used_mid]="#dbbc7f"
-    theme[used_end]="#f85552"
+    theme[used_start]="${palette.green}"
+    theme[used_mid]="${palette.yellow}"
+    theme[used_end]="${palette.brightRed}"
 
     # Download graph colors
-    theme[download_start]="#a7c080"
-    theme[download_mid]="#83c092"
-    theme[download_end]="#7fbbb3"
+    theme[download_start]="${palette.green}"
+    theme[download_mid]="${palette.aqua}"
+    theme[download_end]="${palette.blue}"
 
     # Upload graph colors
-    theme[upload_start]="#dbbc7f"
-    theme[upload_mid]="#e69875"
-    theme[upload_end]="#e67e80"
+    theme[upload_start]="${palette.yellow}"
+    theme[upload_mid]="${palette.orange}"
+    theme[upload_end]="${palette.red}"
 
     # Process box color gradient for threads, mem and cpu usage
-    theme[process_start]="#a7c080"
-    theme[process_mid]="#e67e80"
-    theme[process_end]="#f85552"
+    theme[process_start]="${palette.green}"
+    theme[process_mid]="${palette.red}"
+    theme[process_end]="${palette.brightRed}"
   '';
 }

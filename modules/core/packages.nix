@@ -1,31 +1,14 @@
+# Minimal system-wide bootstrap tools (usable by root and during recovery).
+# Everything user-facing is managed per-user via home-manager (modules/home).
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    bat
-    btop
     curl
-    fd
     file
-    fzf
     git
-    gnupg
-    htop
-    jq
-    just
-    lazygit
     openssh
-    ripgrep
     rsync
-    starship
-    tmux
-    tree
-    unzip
     vim
     wget
-    yazi
-    zoxide
-    zsh
   ];
-
-  programs.zsh.enable = true;
 }

@@ -1,5 +1,10 @@
 { pkgs, lib, ... }:
 let
+  # Single source of truth for language enablement. Consumed here for LSP/tool
+  # packages and by modules/home/nvim.nix (via _module.args.lspLanguages) for
+  # the matching nvf language modules.
+  # Note: rust has no package block on purpose — rust-analyzer/clippy/rustfmt
+  # come from rustup (modules/home/dev.nix).
   languages = {
     c-cpp = true;
     css = true;
@@ -54,7 +59,6 @@ let
     ++ lib.optionals languages.python [
       pyright
       ruff
-      black
     ]
     ++ lib.optionals languages.shell [
       shellcheck
@@ -76,22 +80,6 @@ let
 in
 {
   home.packages = lspPackages ++ devTools;
-
-  home.sessionVariables = {
-    LSP_C_CPP_ENABLED = if languages.c-cpp then "1" else "0";
-    LSP_CSS_ENABLED = if languages.css then "1" else "0";
-    LSP_GO_ENABLED = if languages.go then "1" else "0";
-    LSP_HTML_ENABLED = if languages.html then "1" else "0";
-    LSP_JAVA_ENABLED = if languages.java then "1" else "0";
-    LSP_JS_TS_ENABLED = if languages.javascript-typescript then "1" else "0";
-    LSP_LUA_ENABLED = if languages.lua then "1" else "0";
-    LSP_NIX_ENABLED = if languages.nix then "1" else "0";
-    LSP_PYTHON_ENABLED = if languages.python then "1" else "0";
-    LSP_RUST_ENABLED = if languages.rust then "1" else "0";
-    LSP_SHELL_ENABLED = if languages.shell then "1" else "0";
-    LSP_YAML_ENABLED = if languages.yaml then "1" else "0";
-    LSP_ZIG_ENABLED = if languages.zig then "1" else "0";
-  };
 
   _module.args.lspLanguages = languages;
 }

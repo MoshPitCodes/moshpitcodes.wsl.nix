@@ -1,7 +1,9 @@
 { inputs }:
-final: prev: {
+_final: prev: {
   td = prev.buildGoModule rec {
     pname = "td";
+    # Keep in sync with the `td` input tag in flake.nix; a bump also needs a
+    # new vendorHash.
     version = "0.51.0";
 
     src = inputs.td;

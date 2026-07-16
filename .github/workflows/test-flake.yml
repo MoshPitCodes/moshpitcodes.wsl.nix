@@ -2,6 +2,8 @@ name: Test flake
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -50,10 +52,25 @@ jobs:
         nix flake metadata --json | jq '.locks | keys | length' > /dev/null
         echo "✅ Flake.lock is valid"
 
+    - name: Lint Nix sources
+      run: |
+        echo "🔎 Running statix and deadnix..."
+        nix run nixpkgs#statix -- check .
+        nix run nixpkgs#deadnix -- --fail .
+        echo "✅ Lints passed"
+
+    - name: Check formatting
+      run: |
+        echo "🎨 Checking Nix formatting..."
+        nix run nixpkgs#nixfmt-rfc-style -- --check $(find . -name '*.nix' -not -path './secrets.nix')
+        echo "✅ Formatting is clean"
+
     - name: Run flake check
       run: |
         echo "🧪 Running flake check..."
-        nix flake check --show-trace
+        # --impure: secrets.nix is untracked, so it is resolved via $PWD at
+        # evaluation time (see flake.nix).
+        nix flake check --impure --show-trace
         echo "✅ Flake check passed"
 
     - name: Test development shell

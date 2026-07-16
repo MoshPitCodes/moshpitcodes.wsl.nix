@@ -1,12 +1,6 @@
-{
-  lib,
-  pkgs,
-  customsecrets,
-  ...
-}:
+# ANTHROPIC_API_KEY / OPENROUTER_API_KEY are injected by coding-agents/default.nix.
+{ pkgs, ... }:
 let
-  anthropicApiKey = customsecrets.apiKeys.anthropic or "";
-  openrouterApiKey = customsecrets.apiKeys.openrouter or "";
   opencode = pkgs.writeShellScriptBin "opencode" ''
     exec ${pkgs.nodejs}/bin/npx -y opencode-ai@latest "$@"
   '';
@@ -35,14 +29,6 @@ in
       ];
     };
   };
-
-  home.sessionVariables =
-    lib.optionalAttrs (anthropicApiKey != "") {
-      ANTHROPIC_API_KEY = anthropicApiKey;
-    }
-    // lib.optionalAttrs (openrouterApiKey != "") {
-      OPENROUTER_API_KEY = openrouterApiKey;
-    };
 
   programs.zsh.shellAliases = {
     opencode-setup = ''

@@ -7,12 +7,34 @@ configuration and how to customize it.
 
 ```
 flake.nix            # entry point: inputs, customsecrets loader, wsl host
-hosts/wsl/           # single WSL host (hostname + stateVersion)
-modules/core/        # system-level: nix, packages, wsl, system (locale/tz), user
-modules/home/        # Home Manager: shell, zsh, editor, agents, tools
-overlays/            # local package overlays (sidecar, td, terraform, ...)
+hosts/wsl/           # single WSL host (hostname + stateVersion + optional NAS modules)
+modules/core/        # system-level: nix, wsl, system (locale/tz), user, docker,
+                     # nas-mount/samba, and a minimal root bootstrap package set
+modules/home/        # Home Manager: shell, zsh, editor, agents, theme, and ALL
+                     # user-facing packages (dev.nix, packages.nix, language-servers.nix)
+overlays/            # local package overlays (sidecar, td, terraform, worktrunk,
+                     # cpplint, switch-to-configuration)
+justfile             # repo tasks: rebuild / test / build / update / fmt / lint / check
 secrets.nix.example  # secret template (copy to secrets.nix)
 ```
+
+## Package ownership
+
+`modules/core/packages.nix` deliberately contains only a small root-usable
+bootstrap set (git, vim, curl, ...). Every user-facing tool lives exactly once
+in home-manager:
+
+- `modules/home/dev.nix` — dev/DevOps toolchain (go, rust via rustup, k8s, terraform, ...)
+- `modules/home/packages.nix` — general CLI tools and terminal extras
+- `modules/home/language-servers.nix` — LSP servers, formatters, linters per language
+
+To add or remove a tool, touch the one matching file above.
+
+## Theme (`modules/home/theme.nix`)
+
+The Everforest palette is defined once and exposed to all home modules as the
+`palette` module argument. btop, fzf, lazygit, and nvim consume it — switching
+themes means editing this single file.
 
 ## WSL integration (`modules/core/wsl.nix`)
 
@@ -39,21 +61,26 @@ Adjust these to your locale in `modules/core/system.nix`.
 
 ## Shell (`modules/home/zsh/`)
 
-A full zsh port with FZF-Tab, history settings, completion init, and WSL-specific
-fixes (ALSA/SDL env, mouse-tracking guard under `WSL_DISTRO_NAME`, GPG_TTY).
-`direnv` and `zoxide` live here (moved out of `dev.nix`).
+A full zsh setup with FZF-Tab, history settings, completion init, and
+WSL-specific fixes (mouse-tracking guard under `WSL_DISTRO_NAME`, GPG_TTY,
+SSH key auto-load). `direnv` and `zoxide` live here too.
 
 Notable aliases (repo-aware for this WSL repo):
 
 - `cdnix` - `cd ~/Code/MoshPitCodes/moshpitcodes.wsl.nix`
-- `ns` / `rebuild` - rebuild this flake with `--impure`
+- `ns` / `rebuild` - rebuild this flake with `--impure` (must run from the
+  repo root; a missing `secrets.nix` fails evaluation)
 - `winhome` - `cd /mnt/c/Users`
+
+The repo `justfile` provides the same operations outside zsh:
+`just rebuild` / `test` / `build` / `update` / `fmt` / `lint` / `check`.
 
 ## Editor (nvf)
 
 `modules/home/nvim.nix` enables `nvf` (a Neovim distribution) via the `nvf`
-flake input. `vimAlias`/`viAlias` provide `nvim`/`vi`. Bare `neovim` was removed
-from `modules/core/packages.nix` since nvf provides it.
+flake input. `vimAlias`/`viAlias` provide `nvim`/`vi`; nvf supplies the neovim
+package itself (plain `vim` in `modules/core/packages.nix` is only the root
+bootstrap fallback).
 
 Language enablement is synchronized with `modules/home/language-servers.nix`
 through the `_module.args.lspLanguages` arg — change a language flag in
@@ -70,8 +97,11 @@ them from the environment at runtime (Doppler aliases) when not baked in.
 
 Claude Code, Codex, Kilo, Kiro, OpenCode, Pi, and agent-browser (Playwright).
 Most install themselves on first activation via native/npm installers so they
-can self-update. API keys come from `customsecrets.apiKeys.*` (optional) or
-Doppler at runtime.
+can self-update. API keys (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
+`OPENROUTER_API_KEY`) are injected once in `coding-agents/default.nix` from
+`customsecrets.apiKeys.*` (optional) — or loaded from Doppler at runtime via
+the `*-doppler` aliases. Removing an agent is a one-line deletion in the
+`imports` list of `coding-agents/default.nix`.
 
 ## NAS mount (`modules/core/nas-mount.nix`, `modules/core/samba.nix`)
 
@@ -91,8 +121,9 @@ nas = { host = "192.168.178.144"; share = "personal_folder"; };
 samba = { username = "nas-user"; password = "nas-password"; domain = "WORKGROUP"; };
 ```
 
-Without these keys the mount keeps the example defaults (it won't connect) and
-the credential file is not written — safe but inert.
+Without a `nas` block the mount is not declared at all; without a `samba`
+block the credential file is not written. Both modules are safe no-ops until
+the secrets exist.
 
 ## NAS-dependent modules (inert by default)
 
@@ -105,11 +136,19 @@ the credential file is not written — safe but inert.
   `touch <nasBackupPath>/.moshpit-backup-target` once on the NAS, otherwise the
   backup aborts (non-destructively) until the marker exists.
 
-With the fallback `customsecrets` (no `secrets.nix`) the NAS mount and both
-modules above stay completely disabled.
+Without a `nas` block in `secrets.nix` the NAS mount is not declared, and
+without `gpgDir` / `backup.nasBackupPath` both modules above stay disabled.
+A missing `secrets.nix` fails evaluation entirely (see SECRETS.md).
 
 ## Overlays
 
-`overlays/default.nix` aggregates local package overlays (`sidecar`, `td`,
-`terraform`, `worktrunk`, `switch-to-configuration`). These match upstream and
-require no changes for WSL.
+`overlays/default.nix` aggregates local package overlays:
+
+- `sidecar`, `td` — Go CLIs built from pinned flake inputs (bumping means
+  updating the input tag in `flake.nix` *and* the overlay's `version` +
+  `vendorHash`)
+- `worktrunk` — re-exported from its flake input
+- `terraform` — pins an official binary release ahead of nixpkgs; delete once
+  nixpkgs catches up
+- `cpplint` — skips a broken upstream test suite
+- `switch-to-configuration` — WSL DBus fix for `switch-to-configuration-ng`

@@ -1,23 +1,16 @@
 # Neovim configuration with Everforest theme
-# LSP configuration is centralized in language-servers.nix
+# LSP servers/tools and language enablement come from language-servers.nix
 {
-  pkgs,
   inputs,
   lspLanguages,
+  palette,
   ...
 }:
 {
   imports = [ inputs.nvf.homeManagerModules.default ];
 
-  home.file.".config/nvf/init.lua".text = ''
-    -- User nvf configuration
-    -- Add any custom Lua configuration here
-  '';
-
   programs.nvf = {
     enable = true;
-
-    # Extra packages are now managed in language-servers.nix
 
     settings.vim = {
       vimAlias = true;
@@ -114,7 +107,7 @@
         nvim-notify = {
           enable = true;
           setupOpts = {
-            background_colour = "#2d353b"; # Everforest dark background
+            background_colour = palette.bg;
             render = "compact";
             timeout = 3000;
             top_down = true;

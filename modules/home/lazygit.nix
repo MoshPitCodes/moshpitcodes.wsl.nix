@@ -1,35 +1,29 @@
-# lazygit - terminal git UI (Everforest theme)
-{ pkgs, ... }:
+# lazygit - terminal git UI (theme colors from modules/home/theme.nix)
+{ palette, ... }:
 {
-  home.packages = [ pkgs.lazygit ];
-
-  xdg.configFile."lazygit/config.yml".text = ''
-    gui:
-      nerdFontsVersion: "3"
-      theme:
-        activeBorderColor:
-          - "#83c092"
-          - bold
-        inactiveBorderColor:
-          - "#859289"
-        searchingActiveBorderColor:
-          - "#dbbc7f"
-          - bold
-        optionsTextColor:
-          - "#7fbbb3"
-        selectedLineBgColor:
-          - "#3d484d"
-        cherryPickedCommitFgColor:
-          - "#7fbbb3"
-        cherryPickedCommitBgColor:
-          - "#3d484d"
-        markedBaseCommitFgColor:
-          - "#7fbbb3"
-        markedBaseCommitBgColor:
-          - "#3d484d"
-        unstagedChangesColor:
-          - "#e67e80"
-        defaultFgColor:
-          - "#d3c6aa"
-  '';
+  programs.lazygit = {
+    enable = true;
+    settings.gui = {
+      nerdFontsVersion = "3";
+      theme = {
+        activeBorderColor = [
+          palette.aqua
+          "bold"
+        ];
+        inactiveBorderColor = [ palette.grey1 ];
+        searchingActiveBorderColor = [
+          palette.yellow
+          "bold"
+        ];
+        optionsTextColor = [ palette.blue ];
+        selectedLineBgColor = [ palette.bgSelection ];
+        cherryPickedCommitFgColor = [ palette.blue ];
+        cherryPickedCommitBgColor = [ palette.bgSelection ];
+        markedBaseCommitFgColor = [ palette.blue ];
+        markedBaseCommitBgColor = [ palette.bgSelection ];
+        unstagedChangesColor = [ palette.red ];
+        defaultFgColor = [ palette.fg ];
+      };
+    };
+  };
 }

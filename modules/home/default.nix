@@ -19,6 +19,7 @@
     ./packages.nix
     ./shell.nix
     ./ssh.nix
+    ./theme.nix
     ./tmux.nix
     ./yazi.nix
     ./zsh
@@ -28,6 +29,8 @@
     inherit username;
     homeDirectory = "/home/${username}";
     stateVersion = "25.05";
+    # Non-Nix tool installs (e.g. the Kiro native installer) land here.
+    sessionPath = [ "$HOME/.local/bin" ];
   };
 
   programs.home-manager.enable = true;

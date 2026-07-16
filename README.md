@@ -59,10 +59,11 @@ NixOS configuration for WSL2 on Windows 11. This follows the same broad shape as
 - [./flake.nix](flake.nix) Flake entrypoint with the `wsl` NixOS configuration
 - [./hosts/wsl/](hosts/wsl) WSL host settings
 - [./modules/](modules) Modularized NixOS configurations
-  - [../core/](modules/core) Nix, WSL integration, user, and system packages
-  - [../home/](modules/home) [Home Manager](https://github.com/nix-community/home-manager) shell, Git, SSH, tmux, and dev tooling
-- [./overlays/](overlays) Nixpkgs overlays
+  - [../core/](modules/core) System level: Nix settings, WSL integration, user, Docker, NAS/Samba, and a minimal root bootstrap package set
+  - [../home/](modules/home) [Home Manager](https://github.com/nix-community/home-manager): shell, Git, SSH, tmux, editor, coding agents, and all user-facing packages (single source of truth — nothing is duplicated at the system level)
+- [./overlays/](overlays) Nixpkgs overlays (`sidecar`, `td`, `terraform`, `worktrunk`, `cpplint`, `switch-to-configuration`)
 - [./docs/](docs) Project documentation
+- [./justfile](justfile) Repo tasks (`just rebuild` / `test` / `build` / `update` / `fmt` / `lint` / `check`)
 - [./secrets.nix.example](secrets.nix.example) Local secrets template
 
 > [!TIP]
@@ -120,11 +121,23 @@ NixOS configuration for WSL2 on Windows 11. This follows the same broad shape as
             | user        system        |           | gpg       ssh        fzf           |
             | docker      samba         |           | nvim      bat        btop          |
             | nas-mount   packages      |           | lazygit   yazi       backup-repos   |
-            +---------------------------+           | coding-agents/                     |
+            +---------------------------+           | theme     dev        packages       |
+                                                    | language-servers                    |
+                                                    | coding-agents/                      |
                                                     |   claude-code  codex  opencode      |
                                                     |   kiro-code    kilo-code  pi-mono    |
+                                                    |   agent-browser                     |
                                                     +-------------------------------------+
 ```
+
+Cross-cutting module args (set once, consumed everywhere):
+
+- `palette` (`modules/home/theme.nix`) — the Everforest color palette shared by
+  btop, fzf, lazygit, and nvim; swapping the theme is a one-file change.
+- `lspLanguages` (`modules/home/language-servers.nix`) — language enablement
+  flags shared between the LSP tool packages and the nvf editor modules.
+- API keys are injected once in `modules/home/coding-agents/default.nix`, not
+  per agent.
 
 ```
                             Secrets Flow
@@ -204,9 +217,11 @@ See the [Secrets Guide](SECRETS.md) for detailed instructions on configuring cre
 
 ```bash
 sudo nixos-rebuild switch --flake .#wsl --impure
+# or, with the bundled justfile:
+just rebuild
 ```
 
-`--impure` is required because `secrets.nix` is loaded through an impure path and is intentionally git-ignored.
+`--impure` is required because `secrets.nix` is loaded through an impure path and is intentionally git-ignored. Run from the repo root — a missing `secrets.nix` fails evaluation with instructions rather than building a fallback system.
 
 <br/>
 
@@ -250,9 +265,11 @@ Secrets &amp; Backups
 System Management
 </summary>
 
-- **Declarative Rebuilds**: standard NixOS rebuild workflow with optional Doppler integration
-- **Lazy NAS Mount**: Samba/CIFS share mounted on-demand via `noauto` + `x-systemd.automount`, so it never blocks WSL boot
-- **Modular Operations**: host-specific and shared behavior split across reusable `modules/core` and `modules/home`
+- **Declarative Rebuilds**: standard NixOS rebuild workflow (`just rebuild`) with optional Doppler integration
+- **Lazy NAS Mount**: Samba/CIFS share mounted on-demand via `noauto` + `x-systemd.automount`, so it never blocks WSL boot; fully inert without a `nas` secrets block
+- **Modular Operations**: host-specific and shared behavior split across reusable `modules/core` (minimal system layer) and `modules/home` (all user tooling)
+- **Shared Theme Palette**: one Everforest palette (`modules/home/theme.nix`) drives btop, fzf, lazygit, and nvim
+- **CI + Automation**: PRs run flake checks, statix/deadnix lints, and format checks; `flake.lock` is bumped weekly by a scheduled workflow
 
 </details>
 

@@ -84,22 +84,16 @@
         else if builtins.pathExists ./secrets.nix then
           validateSecrets (import ./secrets.nix)
         else
-          builtins.trace "WARNING: secrets.nix not found. Using fallback values." {
-            username = "nixos";
-            git = {
-              userName = "MoshPitCodes";
-              userEmail = "moshpitcodes@example.com";
-              signingKey = "";
-            };
-            apiKeys = {
-              anthropic = "";
-              openai = "";
-              openrouter = "";
-            };
-            backup = {
-              nasBackupPath = "";
-            };
-          };
+          throw ''
+            secrets.nix not found.
+
+            Copy secrets.nix.example to secrets.nix, fill in your values, and
+            rebuild from the repo root with --impure (secrets.nix is git-ignored,
+            so it is resolved via $PWD / $FLAKE_ROOT at evaluation time):
+
+              cp secrets.nix.example secrets.nix
+              sudo nixos-rebuild switch --flake .#wsl --impure
+          '';
 
       overlays = import ./overlays { inherit inputs; };
     in
@@ -108,9 +102,6 @@
         let
           host = "wsl";
           system = "x86_64-linux";
-        in
-        nixpkgs.lib.nixosSystem {
-          inherit system;
           specialArgs = {
             inherit
               self
@@ -118,8 +109,11 @@
               host
               customsecrets
               ;
-            username = customsecrets.username;
+            inherit (customsecrets) username;
           };
+        in
+        nixpkgs.lib.nixosSystem {
+          inherit system specialArgs;
           modules = [
             nixos-wsl.nixosModules.default
             ./hosts/${host}
@@ -130,15 +124,7 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                extraSpecialArgs = {
-                  inherit
-                    self
-                    inputs
-                    host
-                    customsecrets
-                    ;
-                  username = customsecrets.username;
-                };
+                extraSpecialArgs = specialArgs;
                 users.${customsecrets.username} = import ./modules/home;
               };
             }

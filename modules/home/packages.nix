@@ -3,7 +3,7 @@
   home.packages =
     with pkgs;
     [
-      # Source repo CLI tools kept for WSL.
+      # CLI tools.
       ripgrep
       fd
       eza
@@ -18,9 +18,7 @@
       gtrash
       viu
       nitch
-      nss
       openssl
-      mimeo
       programmer-calculator
       streamlink
       td
@@ -28,10 +26,9 @@
       toipe
       ttyper
       valgrind
-      wavemon
       xxd
 
-      # Source repo system/user utilities that are useful without a desktop.
+      # System/user utilities that are useful without a desktop.
       htop
       ncdu
       killall
@@ -61,7 +58,6 @@
       procs
       bottom
       tealdeer
-      zoxide
       httpie
       doggo
       sd
@@ -72,7 +68,7 @@
       nix-diff
       comma
 
-      # Source repo custom CLI overlays.
+      # Custom CLI overlays (see overlays/).
       sidecar
       worktrunk
     ]
