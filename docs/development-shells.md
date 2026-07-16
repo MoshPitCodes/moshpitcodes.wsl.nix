@@ -47,11 +47,35 @@ modules.
 To change which languages get LSP + treesitter + formatting, edit the
 `languages` attrset in `modules/home/language-servers.nix`.
 
-## Common commands
+## Repo tasks (justfile)
+
+The repo root ships a `justfile` with the common operations:
 
 ```bash
-nix flake check --show-trace        # validate the flake
-nix flake update                    # update flake inputs
-nix build .#nixosConfigurations.wsl.config.system.build.toplevel --show-trace
-nix develop --command echo ok       # smoke-test the dev shell
+just              # list recipes
+just rebuild      # nixos-rebuild switch --flake .#wsl --impure
+just test         # activate without a boot entry
+just build        # build the closure without activating (result symlink)
+just update       # nix flake update
+just fmt          # format all Nix files
+just lint         # statix check + deadnix
+just check        # nix flake check --impure
 ```
+
+## Common commands
+
+`--impure` is required whenever the NixOS configuration is evaluated, because
+`secrets.nix` is git-ignored and resolved via `$PWD` (run from the repo root):
+
+```bash
+nix flake check --impure --show-trace   # validate the flake
+nix flake update                        # update flake inputs
+nix build .#nixosConfigurations.wsl.config.system.build.toplevel --impure --show-trace
+nix develop --command echo ok           # smoke-test the dev shell
+```
+
+## Linting
+
+CI (`.github/workflows/test-flake.yml`) runs `statix check`, `deadnix --fail`,
+and a `nixfmt-rfc-style --check` pass on every PR — `just lint` and `just fmt`
+run the same tools locally.

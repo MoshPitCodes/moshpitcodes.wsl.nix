@@ -48,10 +48,11 @@ Edit `secrets.nix` to configure at minimum:
 - **username** - Your system user
 - **git** - Name, email, and optional signing key
 
-Optional (leave empty to keep modules inert):
+Optional (leave empty/absent to keep the matching modules inert):
 
 - **apiKeys** - `anthropic`, `openai`, `openrouter` for AI coding agents
-- **gpgDir** - absolute path to a backed-up `.gnupg` directory
+- **nas** / **samba** - host, share, and credentials for the lazy CIFS NAS mount
+- **sshKeys** / **gpgDir** / **ghConfigDir** - NAS backup paths for first-boot key/credential restore
 - **backup.nasBackupPath** - destination for the daily `~/Code` backup
 
 See [SECRETS.md](../SECRETS.md) for the full schema and runtime/Doppler usage.
@@ -60,13 +61,16 @@ See [SECRETS.md](../SECRETS.md) for the full schema and runtime/Doppler usage.
 
 ## 4. Apply the Configuration
 
-Rebuild with the `wsl` host. `--impure` is required because `secrets.nix` is
-loaded through impure path resolution in `flake.nix`:
+Rebuild with the `wsl` host **from the repo root**. `--impure` is required
+because `secrets.nix` is loaded through impure path resolution in `flake.nix`;
+if `secrets.nix` is missing, evaluation fails with instructions (there is no
+silent fallback):
 
 ```bash
 sudo nixos-rebuild switch --flake .#wsl --impure
-# or use the zsh alias once the shell is in place:
-rebuild
+# or, once available:
+just rebuild      # via the repo justfile
+rebuild           # zsh alias
 ```
 
 ## 5. (Re)start the WSL instance

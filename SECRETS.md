@@ -12,11 +12,13 @@ This WSL flake uses **file-based secrets** via a local `secrets.nix` file (the `
 2. **Edit `secrets.nix`** with your real values (see the schema below).
 
 3. **Rebuild.** Because `secrets.nix` is loaded through an impure path
-   resolution (`FLAKE_ROOT` / `PWD`), rebuilds use `--impure`:
+   resolution (`FLAKE_ROOT` / `PWD`), rebuilds use `--impure` and must run
+   from the repo root:
    ```bash
    sudo nixos-rebuild switch --flake .#wsl --impure
-   # or the alias from the zsh module:
-   rebuild
+   # or equivalently:
+   just rebuild      # from the repo root
+   rebuild           # zsh alias
    ```
 
 > `secrets.nix` is git-ignored and must **never** be committed. CI copies
@@ -55,7 +57,9 @@ This WSL flake uses **file-based secrets** via a local `secrets.nix` file (the `
   };
 
   # Optional NAS-dependent (leave commented/empty to keep modules inert):
+  # sshKeys = { sourceDir = "/mnt/ugreen-nas/.../.ssh"; keys = [ "id_ed25519_github" ]; };
   # gpgDir = "/mnt/ugreen-nas/Coding/SecretsBackup2025/.gnupg";
+  # ghConfigDir = "/mnt/ugreen-nas/Coding/SecretsBackup2025/.config/gh";
   # backup.nasBackupPath = "/mnt/ugreen-nas/Coding/Repositories";
 }
 ```
@@ -70,7 +74,9 @@ This WSL flake uses **file-based secrets** via a local `secrets.nix` file (the `
 | `apiKeys.*` | `modules/home/coding-agents/default.nix` | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `OPENROUTER_API_KEY` not injected; load at runtime instead |
 | `nas.host` / `nas.share` | `modules/core/nas-mount.nix` | Mount not declared at all (`lib.mkIf (customsecrets ? nas)`) |
 | `samba.*` | `modules/core/samba.nix` | Credential file `/root/.secrets/samba-credentials` is not written (`lib.mkIf (customsecrets ? samba)`); `cifs-utils` + mountpoint still installed |
+| `sshKeys.sourceDir` / `sshKeys.keys` | `modules/home/ssh.nix` | Key-restore activation script skipped entirely |
 | `gpgDir` | `modules/home/gpg.nix` | Activation script skipped entirely (`lib.mkIf (customsecrets ? gpgDir)`) |
+| `ghConfigDir` | `modules/home/git.nix` | `gh` credentials not restored on first bootstrap |
 | `backup.nasBackupPath` | `modules/home/backup-repos.nix` | Service + timer + aliases all disabled (`lib.mkIf hasBackupPath`). When set, the destructive `rsync --delete` also requires a one-time safety marker: `touch <nasBackupPath>/.moshpit-backup-target` on the NAS, otherwise backups skip until the marker exists. |
 
 ## Runtime keys with Doppler
