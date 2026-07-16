@@ -95,7 +95,8 @@ them from the environment at runtime (Doppler aliases) when not baked in.
 
 ## Coding agents (`modules/home/coding-agents/`)
 
-Claude Code, Codex, Kilo, Kiro, OpenCode, Pi, and agent-browser (Playwright).
+Claude Code, Codex, Kilo, Kiro, OpenCode, Pi, agent-browser (Playwright), and
+T3 Code (a web GUI over the CLI agents — `t3`, no key of its own).
 Most install themselves on first activation via native/npm installers so they
 can self-update. API keys (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
 `OPENROUTER_API_KEY`) are injected once in `coding-agents/default.nix` from

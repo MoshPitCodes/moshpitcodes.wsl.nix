@@ -79,7 +79,7 @@ NixOS configuration for WSL2 on Windows 11. This follows the same broad shape as
 | **Terminal Multiplexer**    | [tmux][tmux]                                                                        |
 | **Fuzzy Finder**             | [fzf][fzf] + [fzf-tab][fzf-tab]                                                     |
 | **Text Editor**             | [Neovim][Neovim] via [nvf][nvf]                                                     |
-| **AI Development**          | [Claude Code][Claude Code], [Codex][Codex], [OpenCode][OpenCode], [Kiro][Kiro], [Kilo Code][Kilo Code], [Pi][Pi] |
+| **AI Development**          | [Claude Code][Claude Code], [Codex][Codex], [OpenCode][OpenCode], [Kiro][Kiro], [Kilo Code][Kilo Code], [Pi][Pi], [T3 Code][T3 Code] |
 | **Git UI**                  | [lazygit][lazygit]                                                                  |
 | **File Manager**            | [yazi][yazi]                                                                        |
 | **System Resource Monitor** | [btop][btop]                                                                        |
@@ -100,7 +100,7 @@ flowchart TD
     args["<b>specialArgs</b><br/>customsecrets · inputs · host · username"]
     core["<b>modules/core</b><br/>nix · wsl · system · user<br/>docker · samba · nas-mount · packages"]
     home["<b>modules/home</b><br/>git · zsh · tmux · gpg · ssh · fzf<br/>nvim · bat · btop · lazygit · yazi<br/>theme · dev · packages · language-servers<br/>backup-repos"]
-    agents["<b>coding-agents/</b><br/>claude-code · codex · opencode<br/>kiro-code · kilo-code · pi-mono<br/>agent-browser"]
+    agents["<b>coding-agents/</b><br/>claude-code · codex · opencode<br/>kiro-code · kilo-code · pi-mono<br/>agent-browser · t3code"]
 
     flake --> inputs
     flake --> wsl
@@ -222,7 +222,7 @@ Development Tools
 </summary>
 
 - **Nix Dev Environment**: Reproducible shell via `nix develop`
-- **AI Coding Agents**: Claude Code, Codex, OpenCode, Kiro, Kilo Code, and Pi, each wired to `customsecrets.apiKeys`
+- **AI Coding Agents**: Claude Code, Codex, OpenCode, Kiro, Kilo Code, and Pi, each wired to `customsecrets.apiKeys`, plus T3 Code (a web GUI over them)
 - **Full DevOps Stack**: kubectl, terraform, ansible, Docker Compose, and more
 
 </details>
@@ -296,6 +296,7 @@ Other resources and links:
 [Kiro]: https://kiro.dev/
 [Kilo Code]: https://kilocode.ai/
 [Pi]: https://github.com/badlogic/pi-mono
+[T3 Code]: https://github.com/pingdotgg/t3code
 [lazygit]: https://github.com/jesseduffield/lazygit
 [yazi]: https://github.com/sxyazi/yazi
 [btop]: https://github.com/aristocratos/btop
