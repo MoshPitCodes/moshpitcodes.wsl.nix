@@ -22,6 +22,7 @@ in
     ./kiro-code.nix
     ./opencode.nix
     ./pi-mono.nix
+    ./t3code.nix
   ];
 
   # API keys are shared across the agent modules (claude-code, codex, kiro,
